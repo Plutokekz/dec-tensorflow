@@ -153,7 +153,8 @@ class DEC(tf.Module):
             q = self._soft_assignment(z, self.mu)
             loss = self._kl_divergence(p, q)
         grads = tape.gradient(loss, self.trainable_variables)
-        self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
+        grad_var_pairs = [(g, v) for g, v in zip(grads, self.trainable_variables) if g is not None]
+        self.optimizer.apply_gradients(grad_var_pairs)
         pred = tf.argmax(q, axis=1)
         return loss, pred
 
